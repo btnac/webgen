@@ -1,5 +1,5 @@
 import unittest
-from textnode import TextNode, TextType, text_node_to_html_node
+from textnode import TextNode, TextType, text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -62,6 +62,66 @@ class TestTextNode(unittest.TestCase):
         html_node = text_node_to_html_node(node)
         self.assertNotEqual(html_node.props, "href")
         self.assertNotEqual(html_node.props, "ssrc")
+
+    def test_split_code(self):
+        nod = TextNode("This is text with a `code block` word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([nod], "`", TextType.CODE_TEXT)
+        self.assertEqual(new_nodes, [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE_TEXT),
+            TextNode(" word", TextType.TEXT),
+        ])
+
+    def test_split_bold(self):
+        nod = TextNode("This is text with a **code block** word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([nod], "**", TextType.BOLD_TEXT)
+        self.assertEqual(new_nodes, [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("code block", TextType.BOLD_TEXT),
+            TextNode(" word", TextType.TEXT),
+        ])
+
+    def test_split_italic(self):
+        nod = TextNode("This is text with a **code block** word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([nod], "**", TextType.ITALIC_TEXT)
+        self.assertEqual(new_nodes, [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("code block", TextType.ITALIC_TEXT),
+            TextNode(" word", TextType.TEXT),
+        ])
+
+    def test_split_code_start(self):
+        nod = TextNode("**This** is text with a code block word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([nod], "**", TextType.ITALIC_TEXT)
+        self.assertEqual(new_nodes, [
+            TextNode("", TextType.TEXT),
+            TextNode("This", TextType.ITALIC_TEXT),
+            TextNode(" is text with a code block word", TextType.TEXT),
+        ])
+
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_links(self):
+        matches = extract_markdown_images(
+            "This is text with an ![link](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("link", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_images_dobule(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) or ![imag](https://i.imgur.com/zjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png"), ("imag", "https://i.imgur.com/zjcJKZ.png")], matches)
+
+    def test_extract_markdown_links_double(self):
+        matches = extract_markdown_images(
+            "This is text with an ![link](https://i.imgur.com/zjjcJKZ.png) or ![leink](https://i.imgur.com)"
+        )
+        self.assertListEqual([("link", "https://i.imgur.com/zjjcJKZ.png"), ("leink", "https://i.imgur.com")], matches)
 
 if __name__ == "__main__":
     unittest.main()
