@@ -43,14 +43,13 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
     nodes = []
     for node in old_nodes:
-        if node.text_type is not text_type.TEXT:
+        if node.text_type != TextType.TEXT:
             nodes.append(node)
             continue
         if delimiter not in ["**", "_", "`"]:
             raise Exception("Invalid markdown syntax")
         splitted = node.text.split(delimiter)
         if len(splitted) % 2 != 0:
-            print(splitted)
             for index, word in enumerate(splitted):
                 if index % 2 != 0:
                     nodes.append(TextNode(f"{word}", text_type))
@@ -68,3 +67,59 @@ def extract_markdown_images(text):
 def extract_markdown_links(text):
     match= re.findall(r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)",text)
     return (match)
+
+def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
+    nodes = []
+    for word in (old_nodes):    
+        if word.text_type != TextType.TEXT:
+            nodes.append(word)
+            continue
+        images = extract_markdown_images(word.text)
+        if images is []:
+            nodes.append(word)
+            continue
+        original = word.text
+        for tupl in images: 
+            delimiter = f"![{tupl[0]}]({tupl[1]})"
+            bef, original = original.split(delimiter,1)
+            if not bef.isspace() and bef != "":
+                nodes.append(TextNode(f"{bef}", TextType.TEXT))
+            nodes.append(TextNode(f"{tupl[0]}", TextType.IMAGE, f"{tupl[1]}"))
+        if original != "":
+            nodes.append(TextNode(original, TextType.TEXT))
+    
+    return nodes
+
+def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
+    nodes = []
+    for word in (old_nodes):    
+        if word.text_type != TextType.TEXT:
+            nodes.append(word)
+            continue
+        links = extract_markdown_links(word.text)
+        if links is []:
+            nodes.append(word)
+            continue
+        original = word.text
+        for tupl in links: 
+            delimiter = f"[{tupl[0]}]({tupl[1]})"
+            bef, original = original.split(delimiter,1)
+            if not bef.isspace() and bef != "":
+                nodes.append(TextNode(f"{bef}", TextType.TEXT))
+            nodes.append(TextNode(f"{tupl[0]}", TextType.LINK, f"{tupl[1]}"))
+        if original != "":
+            nodes.append(TextNode(original, TextType.TEXT))
+    
+    return nodes
+
+def text_to_textnodes(text):
+    format = [TextNode(text, TextType.TEXT)]
+    node = split_nodes_delimiter(format,"**", TextType.BOLD_TEXT)
+    node = split_nodes_delimiter(node,"_", TextType.ITALIC_TEXT)
+    node = split_nodes_delimiter(node,"`", TextType.CODE_TEXT)
+    node = split_nodes_image(node)
+    node = split_nodes_link(node)
+    return node
+
+def markdown_to_blocks(markdown):
+    
