@@ -1,3 +1,5 @@
+from blocks_md import markdown_to_blocks, block_to_block_type, BlockType
+
 class HTMLNode():
     def __init__(self, tag: str | None = None, value: str | None = None, children: list | None = None, props: dict | None = None):
         self.tag = tag
@@ -50,3 +52,42 @@ class ParentNode(HTMLNode):
                 node.append(i.to_html())
             
             return f'<{self.tag}{self.props_to_html()}>{"".join(node)}</{self.tag}>'
+
+def marker_helper(text, type):
+    split =  text.split(" ")
+    new = []
+    for i in split:
+        if type.value == "quote":
+            if i == ">":
+                continue
+            new.append(i)
+        if type.value == "code":
+            if i == "```":
+                continue
+            new.append(i)
+    joined = " ".join(new)
+    print(joined)
+    return joined
+
+def heading_helper(text, type):
+    pass
+
+
+def text_to_children(text):
+    pass
+
+def markdown_to_html_node(markdown):
+    splitted = markdown_to_blocks(markdown)
+    print(splitted)
+    for block in splitted:
+        type = block_to_block_type(block)
+        print(type.value)
+        if type.value == "paragraph":
+            clear_text = text_to_children(block)
+        if type.value == "code":
+            no_markers = marker_helper(block, type)
+            clear_text = text_to_children(no_markers)
+        if type.value == "quote":
+            no_markers = marker_helper(block, type)
+            clear_text = text_to_children(no_markers)
+                
