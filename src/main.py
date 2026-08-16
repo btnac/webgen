@@ -1,7 +1,7 @@
 from textnode import TextNode, TextType
-
+from copying import copy, public_deletion
 def main():
-    obj = TextNode("we",TextType.BOLD_TEXT,"https://www.boot.dev")
-    print(obj)
+    public_deletion()
+    copy("static", "public")
 
 main()
