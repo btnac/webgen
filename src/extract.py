@@ -23,7 +23,7 @@ def generate_page(from_path, template_path, dest_path, basepath):
     title_text = file_template_content.replace("{{ Title }}", title)
     replaced_text = title_text.replace("{{ Content }}", formatted_md)
     replace_href = replaced_text.replace('href="/', f'href="{basepath}')
-    replace_src = replace_href.replace('src="/', f'href="{basepath}')
+    replace_src = replace_href.replace('src="/', f'src="{basepath}')
     file_template.close()
 
     dest_dir_path = os.path.dirname(dest_path)
