@@ -1,8 +1,8 @@
 import os, shutil
 
 def public_deletion():
-    if os.path.exists("../public"):
-        shutil.rmtree("../public")
+    if os.path.exists("./public"):
+        shutil.rmtree("./public")
 
 def copy(path, dest):
     if not os.path.exists(dest):

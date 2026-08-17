@@ -34,9 +34,13 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     elif text_node.text_type.value == "code":
         return LeafNode("code",text_node.text)
     elif text_node.text_type.value == "link":
-        return LeafNode("a",text_node.text, text_node.url)
+        if text_node.url is None:
+            raise ValueError("invalid URL")
+        return LeafNode("a", text_node.text, {"href": text_node.url})
     elif text_node.text_type.value == "img":
-        return LeafNode("img",text_node.text, text_node.url)
+        if text_node.url is None:
+            raise ValueError("invalid URL")
+        return LeafNode("img", "", {"src": text_node.url, "alt": text_node.text})
     else:
         raise Exception("Wrong text type")
 
@@ -97,7 +101,7 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
             nodes.append(word)
             continue
         links = extract_markdown_links(word.text)
-        if links is []:
+        if links == []:
             nodes.append(word)
             continue
         original = word.text
@@ -120,3 +124,4 @@ def text_to_textnodes(text):
     node = split_nodes_image(node)
     node = split_nodes_link(node)
     return node
+

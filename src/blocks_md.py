@@ -30,15 +30,15 @@ def block_to_block_type(markdown):
             if not i.startswith(">"):
                 return BlockType.PARAGRAPH
         return BlockType.QUOTE
-    if markdown.startswith("-"):
+    if markdown.startswith("- "):
         for i in lines:
-            if not i.startswith("-"):
+            if not i.startswith("- "):
                 return BlockType.PARAGRAPH
         return BlockType.UNORDERED_LIST
-    if markdown.startswith("1."):
+    if markdown.startswith("1. "):
         num = 1
         for i in lines:
-            if not i.startswith(f"{num}."):
+            if not i.startswith(f"{num}. "):
                 return BlockType.PARAGRAPH
             num += 1
         return BlockType.ORDERED_LIST
@@ -53,7 +53,7 @@ def marker_helper(text, type):
         lines = text.split("\n")
         for i in lines:
             if i.startswith(">"):
-                stripped.append(i[1:])
+                stripped.append(i[2:])
         joined = " ".join(stripped)
         return joined
     if type.value == "paragraph":
@@ -70,8 +70,8 @@ def marker_helper(text, type):
         nodes = []
         lines = text.split("\n")
         for i in lines:
-            if i.startswith("-"):
-                stripped = i[1:]
+            if i.startswith("- "):
+                stripped = i[2:]
                 node = text_to_children(stripped)
                 nodes.append(ParentNode("li",node))
         return nodes
@@ -80,8 +80,8 @@ def marker_helper(text, type):
         num = 1
         lines = text.split("\n")
         for i in lines:
-            if i.startswith(f"{num}."):
-                stripped = i[2:]
+            if i.startswith(f"{num}. "):
+                stripped = i[3:]
                 node = text_to_children(stripped)
                 nodes.append(ParentNode("li",node))
             num += 1

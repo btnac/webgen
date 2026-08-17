@@ -100,7 +100,7 @@ This is another paragraph with _italic_ text and `code` here
         )
 
     def test_quote_single(self):
-        md = ">This is **bolded** paragraph"
+        md = "> This is **bolded** paragraph"
 
         node = markdown_to_html_node(md)
         html = node.to_html()
@@ -121,8 +121,8 @@ This is another paragraph with _italic_ text and `code` here
 
     def test_quote_one_block(self):
         md = """
->This is first **bolded** paragraph
->This is second **bolded** paragraph
+> This is first **bolded** paragraph
+> This is second **bolded** paragraph
 """
 
         node = markdown_to_html_node(md)
@@ -134,8 +134,8 @@ This is another paragraph with _italic_ text and `code` here
 
     def test_quote_multi_block(self):
         md = """
->This is first **bolded** paragraph
->This is second **bolded** paragraph
+> This is first **bolded** paragraph
+> This is second **bolded** paragraph
 
 This is third **bolded** paragraph
 """
@@ -180,9 +180,9 @@ the **same** even with inline stuff
 
     def test_unordered_multi_block(self):
         md = """
--This is first **bolded** paragraph
--This is second _italic_ paragraph
--This is third **bolded** paragraph
+- This is first **bolded** paragraph
+- This is second _italic_ paragraph
+- This is third **bolded** paragraph
 """
 
         node = markdown_to_html_node(md)
@@ -194,9 +194,9 @@ the **same** even with inline stuff
 
     def test_ordered_multi_block(self):
         md = """
-1.This is first **bolded** paragraph
-2.This is second _italic_ paragraph
-3.This is third **bolded** paragraph
+1. This is first **bolded** paragraph
+2. This is second _italic_ paragraph
+3. This is third **bolded** paragraph
 """
 
         node = markdown_to_html_node(md)
